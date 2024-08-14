@@ -8,7 +8,7 @@ CREATE TABLE list (
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-INSERT INTO list(task, status)
-VALUES
-('do the laundry', 1),
-('do the dishes', 0);
+-- INSERT INTO list(task, status)
+-- VALUES
+-- ('do the laundry', 1),
+-- ('do the dishes', 0);
