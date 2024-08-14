@@ -1,5 +1,8 @@
 import mysql from 'mysql2'
 
+import dotenv from 'dotenv'
+dotenv.config()
+
 const pool = mysql.createPool({
     host: process.env.MYSQl_HOST,
     user: process.env.MYSQl_USER,
@@ -12,5 +15,23 @@ async function getTasks() {
     return rows
 }
 
-const tasks = await getTasks()
-console.log(tasks)
+
+async function getTask(id) {
+    const [rows] = await pool.query(`
+        SELECT *
+        FROM list
+        WHERE id = ?
+        `, [id])
+        return rows[0]
+    }
+
+async function createTask(task, status) {
+    const result = await pool.query(`
+        INSERT INTO list (task, status)
+        VALUES (?, ?)
+        `, [task, status])
+        return result
+    }
+
+    const result = await createTask('cook', '0')
+    console.log(result)
