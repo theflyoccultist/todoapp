@@ -1,14 +1,4 @@
-import mysql from 'mysql2'
-
-import dotenv from 'dotenv'
-dotenv.config()
-
-const pool = mysql.createPool({
-    host: process.env.MYSQl_HOST,
-    user: process.env.MYSQl_USER,
-    password: process.env.MYSQl_PASSWORD,
-    database: process.env.MYSQl_DATABASE
-}).promise()
+import pool from '../config/database.js';
 
 export async function getTasks() {
     const [rows] = await pool.query("SELECT * FROM list")
@@ -53,8 +43,24 @@ export async function deleteTask(id) {
 }
 
 export async function deleteAllTasks() {
-    const [result] = await pool.query(`
-        DELETE FROM list
-    `);
-    return result.affectedRows > 0;
+    const connection = await pool.getConnection();
+
+    try {
+        await connection.beginTransaction();
+        await connection.query(`
+            DELETE FROM list
+        `);
+
+        await connection.query(`
+            ALTER TABLE list AUTO_INCREMENT = 1;
+        `);
+        
+        await connection.commit();
+        return true;
+    } catch(error) {
+        await connection.rollback();
+        throw error;
+    } finally {
+        connection.release();
+    }
 }
