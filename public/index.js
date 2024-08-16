@@ -18,21 +18,11 @@ async function fetchTasks() {
             tasks.forEach(task => {
                 const li = document.createElement('li');
 
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.checked = task.status;
-                checkbox.onchange = () => updateTaskStatus(task.id, checkbox.checked, task.task);
-
-                const taskText = document.createTextNode(` ${task.task}`);
+                const checkbox = createCheckbox(task.status, () => updateTaskStatus(task.id, checkbox.checked, task.task));
+                const deleteTaskButton = createButton('Delete', () => deleteTask(task.id));
                 
-                const deleteTaskButton = document.createElement('button');
-                deleteTaskButton.id = ('delete-item');
-                deleteTaskButton.textContent = ('Delete');
-                deleteTaskButton.addEventListener('click', () => {
-                    console.log('Delete button clicked.')
-                })
                 li.appendChild(checkbox);
-                li.appendChild(taskText);
+                li.appendChild(document.createTextNode(` ${task.task} `));
                 li.appendChild(deleteTaskButton)
                 taskList.appendChild(li);
             });
@@ -42,6 +32,21 @@ async function fetchTasks() {
         }
     }
     taskisVisible = !taskisVisible;
+}
+
+function createCheckbox(checked, onChange) {
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.checked = checked;
+    checkbox.onchange = onChange;
+    return checkbox;
+}
+
+function createButton(text, onClick) {
+    const button = document.createElement('button');
+    button.textContent = text;
+    button.addEventListener('click', onClick);
+    return button;
 }
 
 async function updateTaskStatus(taskId, status, task) {
@@ -65,7 +70,8 @@ async function updateTaskStatus(taskId, status, task) {
 async function addTask(status, task) {
     const addTaskButton = document.querySelector('#add_item');
     const tasksContainer = document.querySelector('#list-container')
-    
+    const taskisVisible = tasksContainer && tasksContainer.style.display !== 'none';
+
     if (taskisVisible && addTaskButton) {
         const taskForm = document.createElement('form');
         taskForm.innerHTML = `
@@ -82,10 +88,9 @@ async function addTask(status, task) {
             const statusValue = document.querySelector('#status-input').checked;
 
             const success = await taskRequest(statusValue, taskValue);
-            const li = document.createElement('li');
 
             if (success) {
-                
+                const li = document.createElement('li');                
                 li.innerHTML = `
                     <input type="checkbox" ${statusValue ? 'checked' : ''}>
                     ${taskValue}
@@ -94,8 +99,6 @@ async function addTask(status, task) {
 
                 // Append the new task to the tasks container
                 taskList.appendChild(li);
-
-                // Optionally, clear the form or provide feedback to the user
                 taskForm.reset();
                 console.log('Task added and displayed successfully.');
             }
