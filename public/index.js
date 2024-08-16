@@ -4,8 +4,6 @@ const taskList = document.getElementById('task-list');
 async function fetchTasks() {
 
     const toggleButton = document.querySelector('#get-tasks');
-    
-    const deleteTaskButton = document.querySelector('#delete_item');
     const deleteAllTaskButton = document.querySelector('#delete_all_item')
 
     if (taskisVisible) {
@@ -26,9 +24,16 @@ async function fetchTasks() {
                 checkbox.onchange = () => updateTaskStatus(task.id, checkbox.checked, task.task);
 
                 const taskText = document.createTextNode(` ${task.task}`);
-
+                
+                const deleteTaskButton = document.createElement('button');
+                deleteTaskButton.id = ('delete-item');
+                deleteTaskButton.textContent = ('Delete');
+                deleteTaskButton.addEventListener('click', () => {
+                    console.log('Delete button clicked.')
+                })
                 li.appendChild(checkbox);
                 li.appendChild(taskText);
+                li.appendChild(deleteTaskButton)
                 taskList.appendChild(li);
             });
             toggleButton.textContent = 'Hide Tasks';
@@ -84,7 +89,7 @@ async function addTask(status, task) {
                 li.innerHTML = `
                     <input type="checkbox" ${statusValue ? 'checked' : ''}>
                     ${taskValue}
-                    <button onclick="deleteTask(${li.id})">Delete</button>
+                    <button id="delete-item" onclick="deleteTask(${li.id})">Delete</button>
                 `;
 
                 // Append the new task to the tasks container
