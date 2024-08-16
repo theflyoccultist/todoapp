@@ -17,6 +17,7 @@ async function fetchTasks() {
             taskList.innerHTML = '';
             tasks.forEach(task => {
                 const li = document.createElement('li');
+                li.id = `task-${task.id}`;
 
                 const checkbox = createCheckbox(task.status, () => updateTaskStatus(task.id, checkbox.checked, task.task));
                 const deleteTaskButton = createButton('Delete', () => deleteTask(task.id));
@@ -126,5 +127,34 @@ async function taskRequest(status, task) {
     } catch (error) {
         console.error('Error adding task', error);
         return false;
+    }
+}
+
+
+function deleteTask(taskId) {
+    deleteRequest(taskId).then(() => {
+        const taskElement = document.getElementById(`task-${taskId}`);
+        if (taskElement) {
+            taskElement.remove();
+        }
+    }).catch((error) => {
+        console.error('error during task deletion:', error)
+    });
+}
+
+async function deleteRequest(taskId) {
+    try {
+       const response = await fetch(`/api/tasks/${taskId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+       });
+       if (!response.ok) {
+        throw new Error('Failed to delete task')
+       } 
+       console.log("task deleted successfully.")
+    } catch (error) {
+        console.error('Error deleting task', error);
     }
 }
