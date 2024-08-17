@@ -4,7 +4,7 @@ const taskList = document.getElementById('task-list');
 async function fetchTasks() {
 
     const toggleButton = document.querySelector('#get-tasks');
-    const deleteAllTaskButton = document.querySelector('#delete_all_item')
+    // const deleteAllTaskButton = document.querySelector('#delete_all_item')
 
     if (taskisVisible) {
         taskList.innerHTML = '';
@@ -20,11 +20,13 @@ async function fetchTasks() {
                 li.id = `task-${task.id}`;
 
                 const checkbox = createCheckbox(task.status, () => updateTaskStatus(task.id, checkbox.checked, task.task));
+                const editTaskButton = createButton('Edit', () => showEditTaskForm(task.id, task.task, task.status));
                 const deleteTaskButton = createButton('Delete', () => deleteTask(task.id));
                 
                 li.appendChild(checkbox);
                 li.appendChild(document.createTextNode(` ${task.task} `));
-                li.appendChild(deleteTaskButton)
+                li.appendChild(editTaskButton);
+                li.appendChild(deleteTaskButton);
                 taskList.appendChild(li);
             });
             toggleButton.textContent = 'Hide Tasks';
@@ -69,43 +71,42 @@ async function updateTaskStatus(taskId, status, task) {
 }
 
 async function addTask(status, task) {
+    const existingForm = document.querySelector('#taskForm');
+    if (existingForm) {
+        console.log("A task form is already open.");
+        return;
+    }
+    
     const addTaskButton = document.querySelector('#add_item');
-    const tasksContainer = document.querySelector('#list-container')
-    const taskisVisible = tasksContainer && tasksContainer.style.display !== 'none';
-
+    
     if (taskisVisible && addTaskButton) {
-        const taskForm = document.createElement('form');
-        taskForm.innerHTML = `
-        <input type="text" id="task-input" value="${task || ''}" placeholder="Enter task" required>
-        <input type="checkbox" id="status-input" ${status ? 'checked' : ''}>
-        <button type="submit">Add Task</button>
-    `;
+        const taskField = document.createElement('form');
+        taskField.id = 'taskForm';  // Set an ID to identify the form
+        taskField.innerHTML = `
+            <input type="text" id="newTask" placeholder="Task name" required>
+            <label>
+                <input type="checkbox" id="newTaskStatus">
+                Completed
+            </label>
+            <button type="submit">Add Task</button>
+        `;
 
-        tasksContainer.appendChild(taskForm);
+        taskField.onsubmit = async (e) => {
+            e.preventDefault();
+            const newTaskName = document.querySelector('#newTask').value;
+            const newTaskStatus = document.querySelector('#newTaskStatus').checked;
 
-        taskForm.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            const taskValue = document.querySelector('#task-input').value;
-            const statusValue = document.querySelector('#status-input').checked;
+            if (newTaskName.trim() === '') return;
 
-            const success = await taskRequest(statusValue, taskValue);
+            await taskRequest(status, newTaskName);  // Add task to the database
+            fetchTasks();  // Refresh the task list to show the new task
+            taskField.remove();  // Remove the form after submission
+        };
 
-            if (success) {
-                const li = document.createElement('li');                
-                li.innerHTML = `
-                    <input type="checkbox" ${statusValue ? 'checked' : ''}>
-                    ${taskValue}
-                    <button id="delete-item" onclick="deleteTask(${li.id})">Delete</button>
-                `;
-
-                // Append the new task to the tasks container
-                taskList.appendChild(li);
-                taskForm.reset();
-                console.log('Task added and displayed successfully.');
-            }
-        });
+        addTaskButton.parentNode.insertBefore(taskField, addTaskButton.nextSibling);
+        console.log("Task form added.");
     } else {
-        console.log("you need to show tasks before adding.")
+        console.log("You need to show tasks before adding.");
     }
 }
 
@@ -122,14 +123,98 @@ async function taskRequest(status, task) {
         if (!response.ok) {
             throw new Error('Failed to add task');
         }
-        console.log('Task status added successfully');
-        return true;
+        console.log('Task added successfully');
     } catch (error) {
         console.error('Error adding task', error);
-        return false;
     }
 }
 
+function editTask(task, taskId) {
+        const taskElement = document.getElementById(taskId);
+        if (taskElement) {
+            // Replace task text with an input field to edit the task
+            const inputField = document.createElement('input');
+            inputField.type = 'text';
+            inputField.value = task;
+
+            // Replace the current task text with the input field
+            taskElement.innerHTML = '';
+            taskElement.appendChild(inputField);
+
+            // create a save button
+            const saveButton = document.createElement('button');
+            saveButton.textContent = 'Save';
+            taskElement.appendChild(saveButton);
+
+            saveButton.addEventListener('click', async () => {
+                const newTaskValue = inputField.value;
+                const success = await editRequest(taskId, newTaskValue);
+
+                
+                if (success) {
+                    // Update the task's text with the new value
+                    taskElement.innerHTML = `
+                        <input type="checkbox" ${statusValue ? 'checked' : ''}>
+                        ${newTaskValue}
+                        <button id="delete-item" onclick="deleteTask('${taskId}')">Delete</button>
+                        <button id="edit-item" onclick="editTask('${newTaskValue}', '${taskId}')">Edit</button>
+                    `;
+                    console.log('Task edited and updated successfully.');
+                }
+            });
+    } else {
+        console.error('Task element not found.');
+    }
+}
+
+function showEditTaskForm(taskId, currentTask, currentStatus) {
+    const existingForm = document.querySelector('#editTaskForm');
+    if (existingForm) {
+        existingForm.remove();
+    }
+
+    const li = document.getElementById(`task-${taskId}`);
+    const editForm = document.createElement('form');
+    editForm.id = 'editTaskForm';
+
+    editForm.innerHTML = `
+        <input type="text" id="editTaskName" value="${currentTask}">
+        <input type="checkbox" id="editTaskStatus" ${currentStatus ? 'checked' : ''}>
+        <button type="submit">Save</button>
+        <button type="button" onclick="this.closest('form').remove()">Cancel</button>
+    `;
+
+    editForm.onsubmit = async (e) => {
+        e.preventDefault();
+        const editedTaskName = document.querySelector('#editTaskName').value;
+        const editedTaskStatus = document.querySelector('#editTaskStatus').checked;
+
+        await updateTaskStatus(taskId, editedTaskStatus, editedTaskName);
+        fetchTasks();  // Refresh the task list to show updated tasks
+    };
+
+    li.appendChild(editForm);
+}
+
+
+
+async function editRequest(taskId, newTaskValue) {
+    try {
+        const response = await fetch (`/api/tasks/${taskId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ task: newTaskValue})
+        });
+        if (!response.ok) {
+            throw new Error('failed to edit task.')
+        }
+        console.log('task edited successfully.')
+    } catch (error) {
+        console.error('Error editing task', error);
+    }
+}
 
 function deleteTask(taskId) {
     deleteRequest(taskId).then(() => {
