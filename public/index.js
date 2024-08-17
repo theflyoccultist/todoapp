@@ -70,7 +70,7 @@ async function updateTaskStatus(taskId, status, task) {
     }
 }
 
-async function addTask(status, task) {
+async function addTask() {
     const existingForm = document.querySelector('#taskForm');
     if (existingForm) {
         console.log("A task form is already open.");
@@ -98,7 +98,7 @@ async function addTask(status, task) {
 
             if (newTaskName.trim() === '') return;
 
-            await taskRequest(status, newTaskName);  // Add task to the database
+            await taskRequest(newTaskStatus, newTaskName);  // Add task to the database
             fetchTasks();  // Refresh the task list to show the new task
             taskField.remove();  // Remove the form after submission
         };
