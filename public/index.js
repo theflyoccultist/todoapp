@@ -4,8 +4,7 @@ const taskList = document.getElementById('task-list');
 async function fetchTasks() {
 
     const toggleButton = document.querySelector('#get-tasks');
-    // const deleteAllTaskButton = document.querySelector('#delete_all_item')
-
+    
     if (taskisVisible) {
         taskList.innerHTML = '';
         toggleButton.textContent = 'Show Tasks';
