@@ -7,11 +7,26 @@
     <link rel="icon" href="#"/>
 </head>
 <body>
-    <div id="accounts" class="accounts">
-        <button id="register">Register</button>
-        <button id="login">Login</button>
-        <p>welcome, ${username}!</p>
-    </div>
+    <h1>Login</h1>
+    <form id="loginForm">
+        <label for="loginUsername">Username:</label>
+        <input type="text" id="loginUsername" required>
+        <label for="loginPassword">Password:</label>
+        <input type="password" id="loginPassword" required>
+        <button type="submit">Login</button>
+    </form>
+
+    <h1>Register</h1>
+    <form id="registerForm">
+        <label for="registerUsername">Username:</label>
+        <input type="text" id="registerUsername" required>
+        <label for="registerPassword">Password:</label>
+        <input type="password" id="registerPassword" required>
+        <button type="submit">Register</button>
+    </form>
+
+
+    
     <h1>To do list</h1>
     <div id="list-container" class="list-container">
         <button id="get-tasks" onclick="fetchTasks()">Show tasks</button>
