@@ -1,8 +1,10 @@
 let taskisVisible = false;
 const taskList = document.getElementById('task-list');
+const token = localStorage.getItem('token');
+
+console.log(token);
 
 async function fetchTasks() {
-
     const toggleButton = document.querySelector('#get-tasks');
     
     if (taskisVisible) {
@@ -10,9 +12,21 @@ async function fetchTasks() {
         toggleButton.textContent = 'Show Tasks';
     } else {
         try {
-            const response = await fetch('/api/tasks');
-            const tasks = await response.json();
+
+            const response = await fetch('/api/tasks', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             
+            if (!response.ok) {
+                throw new Error('Failed to fetch tasks');
+            }
+
+            const tasks = await response.json();
+
             taskList.innerHTML = '';
             tasks.forEach(task => {
                 const li = document.createElement('li');
@@ -56,7 +70,8 @@ async function updateTaskStatus(taskId, status, task) {
         const response = await fetch(`/api/tasks/${taskId}`, {
             method: 'PUT',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({ task,status })
         });
@@ -115,7 +130,8 @@ async function taskRequest(status, task) {
         const response = await fetch(`/api/tasks`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({ task, status })
         });
@@ -202,7 +218,8 @@ async function editRequest(taskId, newTaskValue) {
         const response = await fetch (`/api/tasks/${taskId}`, {
             method: 'PUT',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({ task: newTaskValue})
         });
@@ -231,7 +248,8 @@ async function deleteRequest(taskId) {
        const response = await fetch(`/api/tasks/${taskId}`, {
             method: 'DELETE',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             }
        });
        if (!response.ok) {

@@ -1,10 +1,9 @@
 import pool from '../config/database.js';
 
-export async function getTasks() {
-    const [rows] = await pool.query("SELECT * FROM list")
-    return rows
+export async function getTasks(userId) {
+    const [rows] = await pool.query(`SELECT * FROM list WHERE user_id = ?`, [userId]);
+    return rows;
 }
-
 
 export async function getTask(id) {
     const [rows] = await pool.query(`
@@ -15,52 +14,30 @@ export async function getTask(id) {
         return rows[0]
     }
 
-export async function createTask(task, status) {
+export async function createTask(task, status, userId) {
     const [result] = await pool.query(`
-        INSERT INTO list (task, status)
-        VALUES (?, ?)
-        `, [task, status])
-        const id = result.insertId
-        return getTask(id)
+        INSERT INTO list (task, status, user_id)
+        VALUES (?, ?, ?)
+        `, [task, status, userId])
+
+        const id = result.insertId;
+        return getTask(id);
     }
 
-export async function editTask(id, task, status) {
+export async function editTask(id, task, status, userId) {
     const [result] = await pool.query(`
         UPDATE list
         SET task = ?, status = ?
-        WHERE id = ?
-        `, [task, status, id]);
+        WHERE id = ? AND user_id = ?
+        `, [task, status, id, userId]);
 
         return result.affectedRows > 0;
     }
 
-export async function deleteTask(id) {
+export async function deleteTask(id, userId) {
     const [result] = await pool.query(`
         DELETE FROM list
-        WHERE id = ?
-        `, [id])
+        WHERE id = ? AND user_id = ?
+        `, [id, userId])
         return result.affectedRows > 0;
-}
-
-export async function deleteAllTasks() {
-    const connection = await pool.getConnection();
-
-    try {
-        await connection.beginTransaction();
-        await connection.query(`
-            DELETE FROM list
-        `);
-
-        await connection.query(`
-            ALTER TABLE list AUTO_INCREMENT = 1;
-        `);
-        
-        await connection.commit();
-        return true;
-    } catch(error) {
-        await connection.rollback();
-        throw error;
-    } finally {
-        connection.release();
-    }
 }
