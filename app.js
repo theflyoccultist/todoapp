@@ -20,9 +20,12 @@ const __dirname = path.dirname(__filename);
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', index.html));
+  res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
+app.get('/todo', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'todo.html'))
+})
 
 app.use((err, req, res, next) => {
     console.error(err.stack)
