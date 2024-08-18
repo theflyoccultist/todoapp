@@ -15,6 +15,9 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+ALTER TABLE list
+ADD COLUMN user_id INT NOT NULL;
+
 -- INSERT INTO list(task, status)
 -- VALUES
 -- ('do the laundry', 1),

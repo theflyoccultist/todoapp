@@ -1,6 +1,5 @@
 import {getTasks, getTask, createTask, editTask, deleteTask} from '../models/taskModel.js';
 
-
 export async function showAllTasks(req, res) {
     try {
         const userId = req.user.id
@@ -18,10 +17,17 @@ export async function showTask(req, res) {
     }
 
 export async function newTask(req, res) {
-const { task, status } = req.body;
-const userId = req.user.id;
-const tache = await createTask(task, status, userId)
-res.status(201).send(tache);
+
+    const { task, status } = req.body;
+    const userId = req.user.id;
+
+    try {
+        const tache = await createTask(task, status, userId);
+        res.status(201).json(tache);
+    } catch (error) {
+        console.log('error in createTask:', error)
+        res.status(500).json({ message: 'An error occurred', error: error.message });
+    }
 }
 
 export async function updateTask(req, res) {

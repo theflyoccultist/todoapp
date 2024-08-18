@@ -18,6 +18,8 @@ document.getElementById('loginForm').onsubmit = async function(e) {
         }
 
         const data = await response.json();
+        const token = data.token;
+        localStorage.setItem('token', token)
         console.log('Login successful', data);
         window.location.href = 'todo.html';
     } catch (error) {
@@ -46,6 +48,9 @@ document.getElementById('registerForm').onsubmit = async function(e) {
         }
 
         const data = await response.json();
+        const token = data.token;
+        localStorage.setItem('token', token);
+        
         console.log('Registration successful', data);
 
         window.location.href = 'todo.html'
