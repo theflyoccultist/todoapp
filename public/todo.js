@@ -2,8 +2,6 @@ let taskisVisible = false;
 const taskList = document.getElementById('task-list');
 const token = localStorage.getItem('token');
 
-console.log(token);
-
 async function fetchTasks() {
     const toggleButton = document.querySelector('#get-tasks');
     
@@ -12,7 +10,6 @@ async function fetchTasks() {
         toggleButton.textContent = 'Show Tasks';
     } else {
         try {
-
             const response = await fetch('/api/tasks', {
                 method: 'GET',
                 headers: {
