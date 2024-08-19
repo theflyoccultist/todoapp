@@ -5,7 +5,8 @@ CREATE TABLE list (
     id INT PRIMARY KEY AUTO_INCREMENT,
     task VARCHAR(255) NOT NULL,
     status BOOLEAN NOT NULL,
-    created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    user_id INT NOT NULL
 );
 
 CREATE TABLE users (
@@ -14,11 +15,3 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
-ALTER TABLE list
-ADD COLUMN user_id INT NOT NULL;
-
--- INSERT INTO list(task, status)
--- VALUES
--- ('do the laundry', 1),
--- ('do the dishes', 0);
