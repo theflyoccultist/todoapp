@@ -134,9 +134,9 @@ npm start
 ## Important Notes
 
   
- - Environment Variables: Ensure the .env file is correctly configured with your database credentials and JWT secret.
+ - **Environment Variables:** Ensure the .env file is correctly configured with your database credentials and JWT secret.
 
- - Unique Task Lists: Each user has their own unique task list, and tasks are not shared between users.
+ - **Unique Task Lists:** Each user has their own unique task list, and tasks are not shared between users.
 
   
 
