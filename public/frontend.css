@@ -1,0 +1,21 @@
+body {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    flex-direction: column;
+    font-family: sans-serif;
+    row-gap: 10px;
+    padding: 10%;
+}
+
+button {
+    font-size: medium;
+}
+
+.list-container {
+    display: grid;
+}
+
+.logout {
+    margin: 10%;
+}

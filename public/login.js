@@ -3,6 +3,7 @@ document.getElementById('loginForm').onsubmit = async function(e) {
 
     const username = document.getElementById('loginUsername').value;
     const password = document.getElementById('loginPassword').value;
+    const loginError = document.getElementById("loginError");
 
     try {
         const response = await fetch('/auth/login', {
@@ -14,16 +15,22 @@ document.getElementById('loginForm').onsubmit = async function(e) {
         });
 
         if (!response.ok) {
-            throw new Error('Login failed');
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Login failed');
         }
 
         const data = await response.json();
         const token = data.token;
-        localStorage.setItem('token', token)
+        localStorage.setItem('token', token);
+
         console.log('Login successful', data);
+
         window.location.href = 'todo.html';
     } catch (error) {
         console.error('Error during login:', error);
+
+        loginError.innerHTML = error.message;
+        loginError.style.display = 'block';
     }
     
 };
@@ -33,6 +40,7 @@ document.getElementById('registerForm').onsubmit = async function(e) {
 
     const username = document.getElementById('registerUsername').value;
     const password = document.getElementById('registerPassword').value;
+    const registerError = document.getElementById("registerError");
 
     try {
         const response = await fetch('/auth/register', {
@@ -44,7 +52,8 @@ document.getElementById('registerForm').onsubmit = async function(e) {
         });
 
         if (!response.ok) {
-            throw new Error('Registration failed');
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Registration failed');
         }
 
         const data = await response.json();
@@ -56,6 +65,9 @@ document.getElementById('registerForm').onsubmit = async function(e) {
         window.location.href = 'todo.html'
     } catch (error) {
         console.error('Error during registration:', error);
+
+        registerError.innerHTML = error.message;
+        registerError.style.display = 'block';
     }
 };
 

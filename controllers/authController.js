@@ -38,7 +38,7 @@ export async function login(req, res) {
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(400).json({ message: 'Invalid username or password 2' });
+            return res.status(400).json({ message: 'Invalid username or password' });
         }
 
         console.log('Password is valid, generating token');

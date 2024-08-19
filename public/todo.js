@@ -257,3 +257,8 @@ async function deleteRequest(taskId) {
         console.error('Error deleting task', error);
     }
 }
+
+document.getElementById('logoutButton').onclick = function() {
+    localStorage.removeItem('token');
+    window.location.href = 'login.html';
+};
