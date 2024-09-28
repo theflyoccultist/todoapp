@@ -57,7 +57,7 @@ To run this project on your local machine:
   
 
 ```bash
-git clone <repository_url>
+git clone [<repository_url>](https://github.com/theflyoccultist/todoapp_express_mysql)
 
 cd <repository_directory>
 ```
