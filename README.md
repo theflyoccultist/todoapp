@@ -59,7 +59,7 @@ To run this project on your local machine:
 ```bash
 git clone https://github.com/theflyoccultist/todoapp_express_mysql
 
-cd <repository_directory>
+cd todoapp_express_mysql
 ```
 
  2. **Install Dependencies:**
